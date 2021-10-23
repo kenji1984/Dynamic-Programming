@@ -31,6 +31,7 @@ public class RobotObstacleWalking {
 					bestWalks[row][column] = currentCell;
 					continue;
 				}
+				bestWalks[row][column] = 0;
 
 				if (rowAboveExist(row)) {
 					cellAbove = bestWalks[row-1][column]; // Math.max in case it's look at negative cells
@@ -39,7 +40,8 @@ public class RobotObstacleWalking {
 					leftCell = bestWalks[row][column-1];
 				}
 				
-				System.out.println(String.format("[%d][%d] - best path above is already examined: %d, and best path to the left is already examined: %d", row, column, cellAbove, leftCell));
+				System.out.println(String.format("[%d][%d] - best path above is already examined: %d, and best path to the left is already examined: %d", 
+						row, column, cellAbove, leftCell));
 				System.out.println(String.format("Taking the smaller one %d so total cost is %d + %d = %d\n", 
 					Math.min(cellAbove, leftCell), bestWalks[row][column], Math.min(cellAbove, leftCell), currentCell));
 				
@@ -62,8 +64,8 @@ public class RobotObstacleWalking {
 		String[][] grid = {
 			{"O", "X", "O", "O"},
 			{"O", "O", "X", "O"},
-			{"X", "O", "O", "O"},
-			{"X", "X", "O", "O"}
+			{"X", "O", "X", "O"},
+			{"X", "O", "O", "O"}
 		};
 
 		RobotObstacleWalking rw = new RobotObstacleWalking();
@@ -75,6 +77,11 @@ public class RobotObstacleWalking {
 		System.out.println("\nBest Costs:");
 		rw.print2D(bestWalks);
 
+		int lastRow = bestWalks.length-1;
+		int lastCol = bestWalks[lastRow].length-1;
+		if (bestWalks[lastRow][lastCol] > 0) {
+			throw new IllegalArgumentException("All path are obstructed. It's not possible to cross.");
+		}
 		System.out.println("\n" + rw.walkBackward(grid, bestWalks));
 		
 	}
