@@ -1,25 +1,31 @@
 import java.util.*;
 
 /**
- * Given a 2D matrix, each number represents the cost. A Robot starts from the top left of the matrix
- * needs to walk to the bottom right of the matrix. The Robot can only walk right or down. Find the path with the least cost.
+ * Given a 2D matrix, containing value Xs and Os. O represents walkable and X represents Obstacle (not walkable). 
+ * A Robot starts from the top left of the matrix needs to walk to the bottom right of the matrix. 
+ * The Robot can only walk right or down. Find any path.
  */
-public class RobotWalking {
+public class RobotObstacleWalking {
 
-	public int[][] bestWalks(int[][] grid) {
+	/*
+	 * This can be solve with simple recursive call and undo the stack when encountering an obstacle but I'm going to use
+	 * the same algorithm to prove it works. It's the same as the Lowest Cost Robot Walk problem.
+	 */
+	public Integer[][] obstacleCourse(String[][] grid) {
 		if (grid.length == 0) {
 			throw new IllegalArgumentException("grid is empty");
 		}
-		int[][] bestWalks = new int[grid.length][grid[0].length];
+		Integer[][] bestWalks = new Integer[grid.length][grid[0].length];
 
-		// start with 1 cell as the sub problem, and save the best walk for that sub problem
+		// start with 1 cell as the sub problem, consider N as cost = 0 and O as cost = 1. Save the best walk for that sub problem
 		// increase sub problem by 1 cell, then save the best walk for the new cell based result from previous sub problems
+		// non-zero cost will be consider impossible (no path found).
 		for (int row = 0; row < grid.length; row++) {
 			for (int column = 0; column < grid[row].length; column++) {
 
-				int currentCell = grid[row][column];
-				int cellAbove = Integer.MAX_VALUE;
-				int leftCell = Integer.MAX_VALUE;
+				int currentCell = grid[row][column] == "X" ? 1 : 0;
+				int cellAbove = 1;
+				int leftCell = 1;
 
 				if (row == 0 && column == 0) {
 					bestWalks[row][column] = currentCell;
@@ -53,14 +59,15 @@ public class RobotWalking {
 	}
 
 	public static void main(String[] args) {
-		int[][] grid = {
-			{1, 6, 1, 1},
-			{4, 2, 4, 1},
-			{3, 2, 5, 1}
+		String[][] grid = {
+			{"O", "X", "O", "O"},
+			{"O", "O", "X", "O"},
+			{"X", "O", "O", "O"},
+			{"X", "X", "O", "O"}
 		};
 
-		RobotWalking rw = new RobotWalking();
-		int[][] bestWalks = rw.bestWalks(grid);
+		RobotObstacleWalking rw = new RobotObstacleWalking();
+		Integer[][] bestWalks = rw.obstacleCourse(grid);
 
 		System.out.println("Grid: ");
 		rw.print2D(grid);
@@ -72,7 +79,7 @@ public class RobotWalking {
 		
 	}
 
-	private void print2D(int[][] array2D) {
+	private void print2D(Object[][] array2D) {
 		for (int i = 0; i < array2D.length; i++) {
 			for (int j = 0; j < array2D[i].length; j++) {
 				System.out.print(array2D[i][j] + "\t");
@@ -81,25 +88,24 @@ public class RobotWalking {
 		}
 	}
 
-	private String walkBackward(int[][] grid, int[][] bestWalks) {
+	private String walkBackward(String[][] grid, Integer[][] bestWalks) {
 		int row = bestWalks.length-1;
 		int column = bestWalks[0].length-1;
 
 		String path = String.format("[%d][%d]", row+1, column+1);
 
 		do {
-			int previousBest = bestWalks[row][column] - grid[row][column];
-			int topBest = bestWalks[Math.max(row-1, 0)][column];
-			int leftBest = bestWalks[row][Math.max(column-1, 0)];
+			int topBest = row == 0 ? 1 : bestWalks[row-1][column];
+			int leftBest = column == 0 ? 1: bestWalks[row][column];
 
-			System.out.println(String.format("previous best is %d, top is %d, left is %d\n", previousBest, topBest, leftBest));
-			if (previousBest == topBest) {
+			//System.out.println(String.format("[%d][%d] - Looking for path with 0 costs - top is %d, left is %d\n", row, column, topBest, leftBest));
+			if (topBest == 0) {
 				row--;
 				path = String.format("[%d][%d] --> ", row+1, column+1) + path;
-			} else if (previousBest == leftBest) {
+			} else if (leftBest == 0) {
 				column--;
 				path = String.format("[%d][%d] --> ", row+1, column+1) + path;
-			} else { // to end loop
+			} else { // to force end loop
 				row--;
 				column--;
 			}
