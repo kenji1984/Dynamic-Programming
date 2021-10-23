@@ -30,7 +30,7 @@ public class RobotWalking {
 					leftCell = bestWalks[row][column-1];
 				}
 				
-				System.out.println(String.format("[%d][%d] - cell above is: %d, and cell to the left is: %d", row, column, cellAbove, leftCell));
+				System.out.println(String.format("[%d][%d] - best path above is: %d, and best path to the left is: %d", row, column, cellAbove, leftCell));
 				System.out.println(String.format("Taking the smaller one %d so total cost is %d + %d = %d\n", 
 					Math.min(cellAbove, leftCell), bestWalks[row][column], Math.min(cellAbove, leftCell), currentCell));
 				
@@ -52,7 +52,7 @@ public class RobotWalking {
 	public static void main(String[] args) {
 		int[][] grid = {
 			{1, 6, 1, 1},
-			{4, 2, 4, 9},
+			{4, 2, 4, 1},
 			{3, 2, 5, 1}
 		};
 
